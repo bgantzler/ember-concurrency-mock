@@ -1,0 +1,6 @@
+# you definitely want this:
+node_modules
+
+# and you can put in anything else that tends to accumulate in your environment:
+yarn-error.log
+.DS_Store
