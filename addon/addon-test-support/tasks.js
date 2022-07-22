@@ -1,6 +1,7 @@
 import sinon from 'sinon';
 import { resolve, rejects } from 'rsvp';
 import { task } from 'ember-concurrency';
+import { assert } from '@ember/debug';
 
 export class TaskMock {
   _internalTask;
@@ -8,6 +9,16 @@ export class TaskMock {
   rejectTask;
 
   constructor(object, taskName, mockOptions) {
+    // Did they pass only mockOptions
+    if (arguments.length === 1) {
+      mockOptions = object;
+      object = undefined;
+    }
+    if (arguments.length >= 2) {
+      assert("Object can not be undefined", object);
+      assert("Method can not be undefined", taskName);
+    }
+
     const options = mockOptions || this.createOptions(object, taskName);
 
     const InternalTask = class {
@@ -22,7 +33,7 @@ export class TaskMock {
           this.rejectTask = reject;
         });
       }
-      debugger;
+
       @task(options)
       *task() {
         if (this._fakeMethod === undefined) {
@@ -43,32 +54,34 @@ export class TaskMock {
   }
 
   createOptions(object, taskName) {
-    const task = object[taskName];
-    const schedulerPolicy = task?.scheduler?.schedulerPolicy;
-    const policyName = schedulerPolicy?.constructor.name;
-
     let options = {};
 
-    if (task?.group) {
-      options.group = task.group;
-    }
-    if (schedulerPolicy?.maxConcurrency) {
-      options.maxConcurrency = schedulerPolicy.maxConcurrency;
-    }
+    if (object) {
+      const task = object[taskName];
+      const schedulerPolicy = task?.scheduler?.schedulerPolicy;
+      const policyName = schedulerPolicy?.constructor.name;
 
-    switch (policyName) {
-      case 'RestartablePolicy':
-        options.restartable = true;
-        break;
-      case 'DropPolicy':
-        options.drop = true;
-        break;
-      case 'KeepLatestPolicy':
-        options.keepLatest = true;
-        break;
-      case 'EnqueuePolicy':
-        options.enqueue = true;
-        break;
+      if (task?.group) {
+        options.group = task.group;
+      }
+      if (schedulerPolicy?.maxConcurrency) {
+        options.maxConcurrency = schedulerPolicy.maxConcurrency;
+      }
+
+      switch (policyName) {
+        case 'RestartablePolicy':
+          options.restartable = true;
+          break;
+        case 'DropPolicy':
+          options.drop = true;
+          break;
+        case 'KeepLatestPolicy':
+          options.keepLatest = true;
+          break;
+        case 'EnqueuePolicy':
+          options.enqueue = true;
+          break;
+      }
     }
 
     return options;

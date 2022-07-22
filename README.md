@@ -81,6 +81,15 @@ Because the task is a mock, it attempts to simulate the overridden task as much 
 If the task that is being mocked is annotated with `@task({drop:true})` for example, the mocked task
 will also be marked accordingly and behave as a dropable task. 
 
+Passable Task
+
+If you need to create a mocked task that is passed into a component, you can by not 
+passing an object and task name 
+```js
+    this.mockTask = new TaskMock().resolves([]);
+    await render(hbs`<MyComp @task={{this.mockTask.task}} />`);
+```
+
 
 Contributing
 ------------------------------------------------------------------------------

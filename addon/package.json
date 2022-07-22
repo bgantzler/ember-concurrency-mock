@@ -1,6 +1,6 @@
 {
   "name": "ember-concurrency-mock",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Helpers to mock ember-concurrency tasks",
   "keywords": [
     "ember-addon"
