@@ -5,9 +5,9 @@
   "keywords": [
     "ember-addon"
   ],
-  "repository": "",
+  "repository": "https://github.com/bgantzler/ember-concurrancy-mock",
   "license": "MIT",
-  "author": "Brian Gantzler",
+  "author": "Brian Gantzler (bgantzler)",
   "directories": {
     "doc": "doc",
     "test": "tests"

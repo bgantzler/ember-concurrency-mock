@@ -1,4 +1,7 @@
 {
   "private": true,
+  "repository": "https://github.com/bgantzler/ember-concurrancy-mock",
+  "license": "MIT",
+  "author": "Brian Gantzler (bgantzler)",
   "workspaces": ["addon", "test-app"]
 }
