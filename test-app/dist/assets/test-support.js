@@ -7825,56 +7825,17 @@ define("ember-cli-test-loader/test-support/index", ["exports"], function (_expor
   _exports.default = TestLoader;
   ;
 });
-define("ember-concurrency-mock/test-support/tasks", ["exports", "sinon", "rsvp", "ember-concurrency"], function (_exports, _sinon, _rsvp, _emberConcurrency) {
+define("ember-concurrency-mock/test-support/tasks", ["exports", "sinon", "rsvp", "ember-concurrency", "@ember/debug"], function (_exports, _sinon, _rsvp, _emberConcurrency, _debug) {
   "use strict";
 
   Object.defineProperty(_exports, "__esModule", {
     value: true
   });
   _exports.TaskMock = void 0;
-  _exports.stubTask = stubTask;
 
   function _applyDecoratedDescriptor(target, property, decorators, descriptor, context) { var desc = {}; Object.keys(descriptor).forEach(function (key) { desc[key] = descriptor[key]; }); desc.enumerable = !!desc.enumerable; desc.configurable = !!desc.configurable; if ('value' in desc || desc.initializer) { desc.writable = true; } desc = decorators.slice().reverse().reduce(function (desc, decorator) { return decorator(target, property, desc) || desc; }, desc); if (context && desc.initializer !== void 0) { desc.value = desc.initializer ? desc.initializer.call(context) : void 0; desc.initializer = undefined; } if (desc.initializer === void 0) { Object.defineProperty(target, property, desc); desc = null; } return desc; }
 
   function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-  function stubTask(task, f) {
-    if (f) {
-      return _sinon.default.stub(task, 'perform').callsFake(f);
-    } else {
-      return _sinon.default.stub(task, 'perform');
-    }
-  }
-
-  let gOptions;
-  /**
-   * Allows mocking of a task for testing. Under the covers it uses an internal task, so taskMock.task is the
-   * internal task for all the task properties
-   *
-   * Basic usage for mocking a task
-   *
-   *     // Creates a mock of the task that returns the given data instead of calling perform
-   *     new TaskMock(this.myService, 'getInvoiceReportingCountsTask').returns({});
-   *
-   *     // Creates a mock that calls a function instead of perform
-   *    new TaskMock(this.myService, 'getAllBulletinsForAdminTask').callsFake(() => {
-   *      assert.ok(true);
-   *      return resolve([]);
-   *    });
-   *
-   *    // Creates a task mock that waits to enable testing things like isRunning.
-   *    // call finishTask to end the task and allow the test to continue. Resolved data can be passed.
-   *    // call rejectTask to test a failing task
-   *    const mockTask = new TaskMock(service, 'submitQueueTask');
-   *    assert.ok(service.submitDisabled, "submit is disabled");  // submit is disabled while the task is running
-   *    mockTask.finishTask([]);
-   *
-   *
-   *    // The task property of the mock allows access to the task used for testing.
-   *    // This is an internal task, not the real task that was mocked
-   *    const mockTask = new TaskMock(service, 'submitQueueTask').returns({});
-   *    mockTask.task.lastSuccessful
-   */
 
   class TaskMock {
     constructor(object, taskName, mockOptions) {
@@ -7886,6 +7847,17 @@ define("ember-concurrency-mock/test-support/tasks", ["exports", "sinon", "rsvp",
 
       _defineProperty(this, "rejectTask", void 0);
 
+      // Did they pass only mockOptions
+      if (arguments.length === 1) {
+        mockOptions = object;
+        object = undefined;
+      }
+
+      if (arguments.length >= 2) {
+        (true && !(object) && (0, _debug.assert)("Object can not be undefined", object));
+        (true && !(taskName) && (0, _debug.assert)("Method can not be undefined", taskName));
+      }
+
       const options = mockOptions || this.createOptions(object, taskName);
       const InternalTask = (_dec = (0, _emberConcurrency.task)(options), (_class = class _class {
         constructor() {
@@ -7896,8 +7868,6 @@ define("ember-concurrency-mock/test-support/tasks", ["exports", "sinon", "rsvp",
           _defineProperty(this, "finishTask", void 0);
 
           _defineProperty(this, "rejectTask", void 0);
-
-          _defineProperty(this, "debugger", void 0);
 
           this.promise = new Promise((resolve, reject) => {
             this.finishTask = resolve;
@@ -7927,35 +7897,38 @@ define("ember-concurrency-mock/test-support/tasks", ["exports", "sinon", "rsvp",
     }
 
     createOptions(object, taskName) {
-      const task = object[taskName];
-      const schedulerPolicy = task?.scheduler?.schedulerPolicy;
-      const policyName = schedulerPolicy?.constructor.name;
       let options = {};
 
-      if (task?.group) {
-        options.group = task.group;
-      }
+      if (object) {
+        const task = object[taskName];
+        const schedulerPolicy = task?.scheduler?.schedulerPolicy;
+        const policyName = schedulerPolicy?.constructor.name;
 
-      if (schedulerPolicy?.maxConcurrency) {
-        options.maxConcurrency = schedulerPolicy.maxConcurrency;
-      }
+        if (task?.group) {
+          options.group = task.group;
+        }
 
-      switch (policyName) {
-        case 'RestartablePolicy':
-          options.restartable = true;
-          break;
+        if (schedulerPolicy?.maxConcurrency) {
+          options.maxConcurrency = schedulerPolicy.maxConcurrency;
+        }
 
-        case 'DropPolicy':
-          options.drop = true;
-          break;
+        switch (policyName) {
+          case 'RestartablePolicy':
+            options.restartable = true;
+            break;
 
-        case 'KeepLatestPolicy':
-          options.keepLatest = true;
-          break;
+          case 'DropPolicy':
+            options.drop = true;
+            break;
 
-        case 'EnqueuePolicy':
-          options.enqueue = true;
-          break;
+          case 'KeepLatestPolicy':
+            options.keepLatest = true;
+            break;
+
+          case 'EnqueuePolicy':
+            options.enqueue = true;
+            break;
+        }
       }
 
       return options;

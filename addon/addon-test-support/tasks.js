@@ -1,5 +1,5 @@
 import sinon from 'sinon';
-import { resolve, rejects } from 'rsvp';
+import { resolve, reject } from 'rsvp';
 import { task } from 'ember-concurrency';
 import { assert } from '@ember/debug';
 
@@ -105,7 +105,7 @@ export class TaskMock {
 
   rejects(data) {
     this._internalTask._fakeMethod = () => {
-      return rejects(data);
+      return reject(data);
     };
     return this;
   }

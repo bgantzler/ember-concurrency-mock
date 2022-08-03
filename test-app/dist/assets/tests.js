@@ -48,6 +48,25 @@ define("test-app/tests/test-helper", ["test-app/app", "test-app/config/environme
   (0, _qunitDom.setup)(QUnit.assert);
   (0, _emberQunit.start)();
 });
+define("test-app/tests/unit/services/testing-service-test", ["qunit", "ember-qunit", "ember-concurrency-mock/test-support/tasks"], function (_qunit, _emberQunit, _tasks) {
+  "use strict";
+
+  0; //eaimeta@70e063a35619d71f0,"qunit",0,"ember-qunit",0,"ember-concurrency-mock/test-support/tasks"eaimeta@70e063a35619d71f
+
+  (0, _qunit.module)('Unit | Service | testingService', function (hooks) {
+    (0, _emberQunit.setupTest)(hooks);
+    hooks.beforeEach(function () {
+      this.service = this.owner.lookup('service:testing-service');
+    });
+    (0, _qunit.test)('can call a mock function', function (assert) {
+      assert.expects(1);
+      new _tasks.TaskMock(this.service, 'dropTask').callsFake(() => {
+        assert.ok(true);
+      });
+      this.service.dropStart();
+    });
+  });
+});
 define('test-app/config/environment', [], function() {
   var prefix = 'test-app';
 try {
