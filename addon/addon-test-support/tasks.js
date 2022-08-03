@@ -15,8 +15,8 @@ export class TaskMock {
       object = undefined;
     }
     if (arguments.length >= 2) {
-      assert("Object can not be undefined", object);
-      assert("Method can not be undefined", taskName);
+      assert('Object can not be undefined', object);
+      assert('Method can not be undefined', taskName);
     }
 
     const options = mockOptions || this.createOptions(object, taskName);

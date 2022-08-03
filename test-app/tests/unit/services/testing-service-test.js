@@ -6,7 +6,7 @@ import { timeout } from 'ember-concurrency';
 module('Unit | Service | testingService', function (hooks) {
   setupTest(hooks);
 
-  hooks.beforeEach(function() {
+  hooks.beforeEach(function () {
     this.service = this.owner.lookup('service:testing-service');
     this.taskMock = new TaskMock(this.service, 'dropTask');
   });
@@ -14,42 +14,40 @@ module('Unit | Service | testingService', function (hooks) {
   test('allows for callsFake', async function (assert) {
     assert.expect(2);
 
-    let data = "hello";
+    let data = 'hello';
 
     this.taskMock.callsFake(() => {
-      assert.ok(true, "fake was called");
+      assert.ok(true, 'fake was called');
       return data;
     });
 
     let result = await this.service.dropStart();
-    assert.equal(result, data, 'returned value equals');
+    assert.strictEqual(result, data, 'returned value equals');
   });
 
   test('allows for resolve', async function (assert) {
     assert.expect(1);
-    let data = {msg: "hello"};
+    let data = { msg: 'hello' };
 
     this.taskMock.resolves(data);
 
     let result = await this.service.dropStart();
-    assert.equal(result?.msg, data.msg, 'resolved value equals');
+    assert.strictEqual(result?.msg, data.msg, 'resolved value equals');
   });
 
   test('allows for reject', async function (assert) {
     assert.expect(1);
-    let data = {msg: "hello"};
+    let data = { msg: 'hello' };
 
     this.taskMock.rejects(data);
 
-    this.service.dropStart().catch(error => {
-      assert.equal(error.msg, data.msg);
+    this.service.dropStart().catch((error) => {
+      assert.strictEqual(error.msg, data.msg);
     });
   });
 
   test('Honors annotation', async function (assert) {
     assert.expect(1);
-    let data = {msg: "hello"};
-
     this.taskMock.callsFake(async () => {
       await timeout(100);
       assert.ok(true);
@@ -65,6 +63,6 @@ module('Unit | Service | testingService', function (hooks) {
 
     assert.ok(this.taskMock.task.isRunning, 'task is running');
     await this.taskMock.finishTask();
-    assert.ok(this.taskMock.task.isRunning === false, 'task is running');
+    assert.notOk(this.taskMock.task.isRunning, 'task is not running');
   });
 });

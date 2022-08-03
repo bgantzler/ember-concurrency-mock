@@ -8,7 +8,7 @@ export default class TestingServiceService extends Service {
 
   @dropTask
   *dropTask() {
-    timeout(1);
+    yield timeout(1);
     return null;
   }
 }
