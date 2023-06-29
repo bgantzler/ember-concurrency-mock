@@ -1,6 +1,6 @@
 {
   "name": "ember-concurrency-mock",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Helpers to mock ember-concurrency tasks",
   "keywords": [
     "ember-addon"
@@ -23,7 +23,8 @@
 
   "dependencies": {
     "ember-cli-babel": "^7.26.11",
-    "ember-cli-htmlbars": "^6.0.1"
+    "ember-cli-htmlbars": "^6.0.1",
+    "ember-auto-import": "^2.6.3"
   },
   "devDependencies": {
     "babel-eslint": "^10.1.0",
@@ -39,7 +40,7 @@
   },
   "peerDependencies": {
     "ember-concurrency": "^2.2.1",
-    "ember-sinon": "^5.0.0"
+    "sinon": ">= 9.0.0"
   },
   "engines": {
     "node": "12.* || 14.* || >= 16"
